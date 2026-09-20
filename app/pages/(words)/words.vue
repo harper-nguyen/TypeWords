@@ -827,7 +827,7 @@ onUnmounted(() => {
       <div class="flex gap-4 flex-wrap mt-4">
         <Book
           :is-add="false"
-          quantifier="词"
+          quantifier=" words"
           :item="item"
           :checked="selectIds.includes(item.id)"
           @check="() => toggleSelect(item)"
@@ -850,7 +850,7 @@ onUnmounted(() => {
       <div class="flex gap-4 flex-wrap mt-4 min-h-50">
         <Book
           :is-add="false"
-          quantifier="词"
+          quantifier=" words"
           :item="item as any"
           v-for="(item, j) in recommendDictList"
           @click="goDictDetail(item as any)"

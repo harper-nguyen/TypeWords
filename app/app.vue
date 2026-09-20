@@ -45,6 +45,33 @@ useHead(() => ({
     },
   ],
 }))
+
+import { onMounted } from 'vue'
+import { useBaseStore } from '@/core/stores/base'
+
+onMounted(() => {
+  const baseStore = useBaseStore()
+  // Migrate legacy Chinese system dict names from local storage
+  if (baseStore.word?.bookList) {
+    baseStore.word.bookList.forEach(dict => {
+      if (dict.system) {
+        if (dict.name === '收藏') dict.name = 'Favorites'
+        if (dict.name === '错词') dict.name = 'Mistakes'
+        if (dict.name === '已掌握') dict.name = 'Mastered'
+        if (dict.description === '已掌握后的单词不会出现在练习中') {
+          dict.description = 'Mastered words will not appear in practice'
+        }
+      }
+    })
+  }
+  if (baseStore.article?.bookList) {
+    baseStore.article.bookList.forEach(dict => {
+      if (dict.system && dict.name === '收藏') {
+        dict.name = 'Favorites'
+      }
+    })
+  }
+})
 </script>
 
 <template>

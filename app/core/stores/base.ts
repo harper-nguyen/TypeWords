@@ -72,13 +72,13 @@ export const getDefaultBaseState = (): BaseState => ({
   load: false,
   word: {
     bookList: [
-      getDefaultDict({ id: DictId.wordCollect, enName: DictId.wordCollect, name: '收藏', system: true }),
-      getDefaultDict({ id: DictId.wordWrong, enName: DictId.wordWrong, name: '错词', system: true }),
+      getDefaultDict({ id: DictId.wordCollect, enName: DictId.wordCollect, name: 'Favorites', system: true }),
+      getDefaultDict({ id: DictId.wordWrong, enName: DictId.wordWrong, name: 'Mistakes', system: true }),
       getDefaultDict({
         id: DictId.wordKnown,
         enName: DictId.wordKnown,
-        name: '已掌握',
-        description: '已掌握后的单词不会出现在练习中',
+        name: 'Mastered',
+        description: 'Mastered words will not appear in practice',
         system: true,
       }),
     ],
@@ -86,7 +86,7 @@ export const getDefaultBaseState = (): BaseState => ({
   },
   article: {
     bookList: [
-      getDefaultDict({ id: DictId.articleCollect, enName: DictId.articleCollect, name: '收藏', system: true }),
+      getDefaultDict({ id: DictId.articleCollect, enName: DictId.articleCollect, name: 'Favorites', system: true }),
     ],
     studyIndex: -1,
   },

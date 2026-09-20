@@ -41,7 +41,7 @@ function init() {
   let list = Array.from(posMap, ([pos, trans]) => ({ pos: pos, trans: trans, totalFreq: 0 }))
   list.forEach(pos => {
     let totalFreq = 0
-    pos.trans = pos.trans.sort((a, b) => b.frequency - a.frequency)
+    pos.trans = pos.trans.sort((a, b) => (b.frequency ?? 0) - (a.frequency ?? 0))
     pos.trans.forEach((tran, _) => {
       if (tran.frequency) {
         totalFreq += tran.frequency
@@ -52,6 +52,29 @@ function init() {
   list = list.sort((a, b) => b.totalFreq - a.totalFreq)
   posList = list
   noposTrans = emptyPos
+
+  // Auto-translate logic
+  const { translate } = useTranslateText()
+  
+  // Translate empty pos
+  for (let i = 0; i < emptyPos.length; i++) {
+    translate(emptyPos[i].cn).then(res => {
+      if (res && res !== emptyPos[i].cn) {
+        emptyPos[i].cn = res
+      }
+    })
+  }
+
+  // Translate pos list
+  for (let i = 0; i < list.length; i++) {
+    for (let j = 0; j < list[i].trans.length; j++) {
+      translate(list[i].trans[j].cn).then(res => {
+        if (res && res !== list[i].trans[j].cn) {
+          list[i].trans[j].cn = res
+        }
+      })
+    }
+  }
 }
 
 onMounted(() => {
