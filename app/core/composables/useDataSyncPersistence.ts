@@ -89,6 +89,12 @@ function getSyncClient(client?: SupabaseClient | null): SupabaseClient | null {
   return Supabase.getInstance() as SupabaseClient
 }
 
+/** Get the active profile ID (B or M) from localStorage */
+function getProfileId(): string {
+  if (import.meta.server) return 'default'
+  return localStorage.getItem('typewords_active_profile') ?? 'default'
+}
+
 async function getLocalPersistMeta(type: SyncDataType): Promise<LocalPersistMeta | null> {
   if (type === SyncDataType.practice_word) {
     return await getPracticeWordCacheLocalWithMeta()
@@ -145,8 +151,13 @@ function applyDictData(store: ReturnType<typeof useBaseStore>, data: unknown) {
 async function fetchServerMeta(types: SyncDataType[], client?: SupabaseClient | null): Promise<RemoteMetaRow[] | null> {
   const sb = getSyncClient(client)
   if (!sb) return null
+  const profileId = getProfileId()
   try {
-    const { data, error } = await sb.from('typewords_data').select('type, updated_at, data_version').in('type', types)
+    const { data, error } = await sb
+      .from('typewords_data')
+      .select('type, updated_at, data_version')
+      .in('type', types)
+      .eq('profile_id', profileId)
     if (error) {
       console.log('sp-error', error)
       Supabase.setStatus('error', error?.message ?? String(error))
@@ -166,12 +177,13 @@ async function fetchServerDatas(
 ): Promise<RemoteDataRow[] | null> {
   const sb = getSyncClient(client)
   if (!sb) return []
-  console.log('Fetching server data list', types)
+  const profileId = getProfileId()
   try {
     const { data, error } = await sb
       .from('typewords_data')
       .select('type, data, updated_at, data_version')
       .in('type', types)
+      .eq('profile_id', profileId)
     if (error) {
       console.log('sp-error', error)
       Supabase.setStatus('error', error?.message ?? String(error))
@@ -212,12 +224,13 @@ async function compareResultByType(
 async function upsertServerDatas(rows: RemoteDataRow[], client?: SupabaseClient | null): Promise<boolean> {
   const sb = getSyncClient(client)
   if (!sb) return false
+  const profileId = getProfileId()
+  // Attach profile_id to every row so B and M are stored separately
+  const rowsWithProfile = rows.map(row => ({ ...row, profile_id: profileId }))
   try {
-    console.log(
-      'Upserting server data',
-      rows.map(row => row.type)
-    )
-    const { error } = await (sb as any).from('typewords_data').upsert(rows, { onConflict: 'type' })
+    const { error } = await (sb as any)
+      .from('typewords_data')
+      .upsert(rowsWithProfile, { onConflict: 'profile_id,type' })
     if (error) {
       Supabase.setStatus('error', error?.message ?? String(error))
       return false

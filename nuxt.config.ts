@@ -94,19 +94,7 @@ export default defineNuxtConfig({
   i18n: {
     locales: [
       { code: 'en', language: 'en-US', file: 'en.json', name: 'English' },
-      { code: 'zh', language: 'zh-CN', file: 'zh.json', name: '中文' },
-      { code: 'es', language: 'es-ES', file: 'es.json', name: 'Español' },
-      { code: 'fr', language: 'fr-FR', file: 'fr.json', name: 'Français' },
-      { code: 'pt', language: 'pt-BR', file: 'pt.json', name: 'Português' },
-      { code: 'de', language: 'de-DE', file: 'de.json', name: 'Deutsch' },
-      { code: 'ru', language: 'ru-RU', file: 'ru.json', name: 'Русский' },
-      { code: 'uk', language: 'uk-UA', file: 'uk.json', name: 'Українська' },
-      { code: 'ja', language: 'ja-JP', file: 'ja.json', name: '日本語' },
-      { code: 'ko', language: 'ko-KR', file: 'ko.json', name: '한국어' },
-      { code: 'th', language: 'th-TH', file: 'th.json', name: 'ไทย' },
       { code: 'vi', language: 'vi-VN', file: 'vi.json', name: 'Tiếng Việt' },
-      { code: 'id', language: 'id-ID', file: 'id.json', name: 'Bahasa Indonesia' },
-      { code: 'tw', language: 'zh-TW', file: 'tw.json', name: '繁體中文' },
     ],
     defaultLocale: 'en',
     // langDir:'app/i18n/',
@@ -136,8 +124,6 @@ export default defineNuxtConfig({
       passwordRsaPublicKey: process.env.VITE_PASSWORD_RSA_PUBLIC_KEY || '',
       latestCommitHash: latestCommitHash + (process.env.NODE_ENV === 'production' ? '' : ' (dev)'),
       latestCommitTime: latestCommitTime,
-      // Gemini API key — set via NUXT_PUBLIC_GEMINI_API_KEY env var
-      geminiApiKey: process.env.NUXT_PUBLIC_GEMINI_API_KEY || '',
     },
   },
   // 构建配置
@@ -166,13 +152,10 @@ export default defineNuxtConfig({
     prerender: {
       ignore: appBaseURL === '/' ? [] : [withBaseURL('/manifest.json', appBaseURL)],
     },
-    routeRules: {
-      '/**': {
-        headers: {
-          'X-Content-Type-Options': 'nosniff',
-          'X-Frame-Options': 'DENY',
-          'Referrer-Policy': 'strict-origin-when-cross-origin',
-        },
+    devProxy: {
+      '/baidu': {
+        target: 'https://api.fanyi.baidu.com/api/trans/vip/translate',
+        changeOrigin: true,
       },
     },
   },

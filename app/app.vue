@@ -45,32 +45,10 @@ useHead(() => ({
     },
   ],
 }))
-
-// --- Profile system ---
-const PROFILE_KEY = 'typewords_active_profile'
-const activeProfile = ref<string | null>(null)
-const showPicker = ref(false)
-
-onMounted(() => {
-  const saved = localStorage.getItem(PROFILE_KEY)
-  if (saved) {
-    activeProfile.value = saved
-  } else {
-    showPicker.value = true
-  }
-})
-
-function onProfileSelected(profile: string) {
-  activeProfile.value = profile
-  showPicker.value = false
-}
 </script>
 
 <template>
-  <!-- Profile picker overlay — hiện khi chưa chọn profile -->
-  <ProfilePicker v-if="showPicker" @selected="onProfileSelected" />
-
-  <NuxtLayout v-else>
+  <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
 </template>

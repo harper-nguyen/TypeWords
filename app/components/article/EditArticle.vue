@@ -46,7 +46,7 @@ const emit = defineEmits<{
   saveAndNext: [val: Article]
 }>()
 
-let networkTranslateEngine = $ref('gemini')
+let networkTranslateEngine = $ref('baidu')
 let progress = $ref(0)
 let failCount = $ref(0)
 let resultRef = $ref<HTMLDivElement>()
@@ -118,7 +118,7 @@ async function startNetworkTranslate() {
   //这里需要用异步，因为watch了article.networkTranslate，改变networkTranslate了之后，会重新设置article.sections
   //导致getNetworkTranslate里面拿到的article.sections是废弃的值
   setTimeout(async () => {
-    await getNetworkTranslate(editArticle, TranslateEngine.Gemini, false, (v: number) => {
+    await getNetworkTranslate(editArticle, TranslateEngine.Baidu, false, (v: number) => {
       progress = v
     })
     failCount = 0
