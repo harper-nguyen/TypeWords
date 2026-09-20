@@ -27,6 +27,37 @@ export function getSentenceAllText(article: Article) {
 }
 
 /***
+ * @desc Gọi Gemini Flash API để dịch một đoạn văn bản sang tiếng Việt
+ * @param text Văn bản cần dịch
+ * @param apiKey Gemini API key
+ * */
+async function translateWithGemini(text: string, apiKey: string): Promise<string> {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
+  const prompt = `Translate the following English text to Vietnamese. Return ONLY the Vietnamese translation, no explanations, no original text:\n\n${text}`
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 1024,
+      },
+    }),
+  })
+
+  if (!res.ok) {
+    throw new Error(`Gemini API error: ${res.status}`)
+  }
+
+  const data = await res.json()
+  const translated = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+  if (!translated) throw new Error('Gemini returned empty translation')
+  return translated
+}
+
+/***
  * @desc
  * @param article 文章实体
  * @param translateEngine 翻译引擎
@@ -39,6 +70,54 @@ export async function getNetworkTranslate(
   allShow: boolean = false,
   progressCb?: (val: number) => void
 ) {
+  // --- Gemini engine ---
+  if (translateEngine === TranslateEngine.Gemini) {
+    const config = useRuntimeConfig()
+    const apiKey = config.public.geminiApiKey as string
+
+    if (!apiKey) {
+      console.error('[TypeWords] Gemini API key not configured')
+      return
+    }
+
+    const allSentences: Sentence[] = article.sections.flat()
+    const total = allSentences.length
+    let index = 0
+
+    // Dịch tiêu đề
+    if (!article.titleTranslate && article.title) {
+      try {
+        article.titleTranslate = await translateWithGemini(article.title, apiKey)
+      } catch (e) {
+        // ignore title translation error
+      }
+    }
+
+    // Dịch từng câu tuần tự (tránh rate limit)
+    for (const sentence of allSentences) {
+      let retries = 0
+      while (retries < 3) {
+        try {
+          sentence.translate = await translateWithGemini(sentence.text, apiKey)
+          if (!allShow) {
+            article.textTranslate += sentence.translate + '\n'
+          }
+          break
+        } catch (e) {
+          retries++
+          if (retries < 3) await new Promise(r => setTimeout(r, 1000 * retries))
+        }
+      }
+      index++
+      progressCb?.(Math.floor((index / total) * 100))
+    }
+
+    article.textTranslate = getSentenceAllTranslateText(article)
+    progressCb?.(100)
+    return
+  }
+
+  // --- Baidu engine (legacy) ---
   let translator: Translator
   if (translateEngine === TranslateEngine.Baidu) {
     translator = new Baidu({
@@ -63,7 +142,6 @@ export async function getNetworkTranslate(
     const translate = async (sentence: Sentence) => {
       try {
         let r = await translator.translate(sentence.text, 'en', 'zh-CN')
-        console.log(r)
 
         if (r) {
           const cb = () => {

@@ -136,6 +136,8 @@ export default defineNuxtConfig({
       passwordRsaPublicKey: process.env.VITE_PASSWORD_RSA_PUBLIC_KEY || '',
       latestCommitHash: latestCommitHash + (process.env.NODE_ENV === 'production' ? '' : ' (dev)'),
       latestCommitTime: latestCommitTime,
+      // Gemini API key — set via NUXT_PUBLIC_GEMINI_API_KEY env var
+      geminiApiKey: process.env.NUXT_PUBLIC_GEMINI_API_KEY || '',
     },
   },
   // 构建配置
@@ -164,10 +166,13 @@ export default defineNuxtConfig({
     prerender: {
       ignore: appBaseURL === '/' ? [] : [withBaseURL('/manifest.json', appBaseURL)],
     },
-    devProxy: {
-      '/baidu': {
-        target: 'https://api.fanyi.baidu.com/api/trans/vip/translate',
-        changeOrigin: true,
+    routeRules: {
+      '/**': {
+        headers: {
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        },
       },
     },
   },

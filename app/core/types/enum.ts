@@ -81,6 +81,7 @@ export const SENTENCE_PLAY_SHORTCUT_KEYS = [
 
 export enum TranslateEngine {
   Baidu = 0,
+  Gemini = 1,
 }
 
 export enum PracticeArticleWordType {
