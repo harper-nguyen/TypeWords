@@ -596,12 +596,12 @@ useEvents([
             <BaseIcon
               v-if="taskWords.new.length"
               @click="continueStudy"
-              :title="`下一组(${settingStore.shortcutKeyMap[ShortcutKey.NextChapter]})`"
+              :title="`Next group (${settingStore.shortcutKeyMap[ShortcutKey.NextChapter]})`"
             >
               <IconFluentArrowRight16Regular class="arrow" width="22" />
             </BaseIcon>
 
-            <BaseIcon @click="randomWrite" :title="`随机默写(${settingStore.shortcutKeyMap[ShortcutKey.RandomWrite]})`">
+            <BaseIcon @click="randomWrite" :title="`Random dictation (${settingStore.shortcutKeyMap[ShortcutKey.RandomWrite]})`">
               <IconFluentArrowShuffle16Regular class="arrow" width="22" />
             </BaseIcon>
           </div>
@@ -636,10 +636,10 @@ useEvents([
   />
   <Dialog
     v-model="showRemoteReloadDialog"
-    title="检测到其他设备的新进度，是否重新加载？"
-    content="重新加载将使用其他设备的最新练习进度；保留当前进度则继续本页练习。"
-    confirm-button-text="重新加载"
-    cancel-button-text="保留当前进度"
+    title="New progress detected from another device. Reload?"
+    content="Reload will use the latest progress from another device; keep current to continue here."
+    confirm-button-text="Reload"
+    cancel-button-text="Keep current"
     :footer="true"
     :padding="true"
     :show-close="false"

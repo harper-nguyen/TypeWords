@@ -68,7 +68,7 @@ function handleCheckedChange(val) {
 async function startPractice() {
   let sbook = runtimeStore.editDict
   if (!sbook.articles.length) {
-    return Toast.warning('没有文章可学习！')
+    return Toast.warning('No articles available!')
   }
 
   studyLoading = true
@@ -107,7 +107,7 @@ const { loading } = useGetDict()
 function createCopy() {
   // 生成副本数据，不写入 store。经由 initialData 传给 EditBook，确认后才写入
   const copy = ensureCustomDictCopy(runtimeStore.editDict)
-  copy.name = runtimeStore.editDict.name + ' (副本)'
+  copy.name = runtimeStore.editDict.name + ' (Copy)'
   _copyData = copy
   isAdd = true
 }
@@ -158,8 +158,8 @@ const { data: book_list } = useFetch(resourceWrap(DICT_LIST.ARTICLE.ALL)).json()
 
 function reset() {
   MessageBox.confirm(
-    '继续此操作会重置所有文章，并从官方书籍获取最新文章列表，学习记录不会被重置。确认恢复默认吗？',
-    '恢复默认',
+    'This will reset all articles and fetch the latest list from the official source. Study records will not be reset. Confirm restore?',
+    'Restore Default',
     async () => {
       let dict = findOfficialSourceDict(book_list.value ?? [], runtimeStore.editDict) as Dict
       if (dict && dict.id) {
@@ -181,11 +181,11 @@ function reset() {
             item.lastLearnIndex = Math.max(item.articles.length - 1, 0)
           }
           runtimeStore.editDict = item
-          Toast.success('恢复成功')
+          Toast.success('Restored successfully')
           return
         }
       }
-      Toast.error('恢复失败')
+      Toast.error('Restore failed')
     },
     null,
     null,
@@ -221,7 +221,7 @@ function next() {
 const list = $computed(() => {
   return [
     getDefaultArticle({
-      title: '介绍',
+      title: 'Introduction',
       id: -1,
     }),
   ].concat(runtimeStore.editDict.articles)

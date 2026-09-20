@@ -44,7 +44,7 @@ const highlightSet = computed(() => new Set(props.highlightedDates))
 
 const todayKey = computed(() => toDateKey(new Date()))
 
-const weekdayLabels = ['一', '二', '三', '四', '五', '六', '日']
+const weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 type Cell = {
   dateKey: string
@@ -102,7 +102,7 @@ const cells = computed((): Cell[] => {
   return out
 })
 
-const monthTitle = computed(() => `${viewYear.value}年${pad2(viewMonth.value + 1)}月`)
+const monthTitle = computed(() => `${viewYear.value} / ${pad2(viewMonth.value + 1)}`)
 
 const displayCells = computed(() => (viewMode.value === 'week' ? weekCells.value : cells.value))
 
@@ -167,10 +167,10 @@ function onSelectCell(cell: Cell) {
           type="info"
           size="small"
           class="cal-toggle"
-          :title="viewMode === 'week' ? '展开月视图' : '回到周视图'"
+          :title="viewMode === 'week' ? 'Expand month view' : 'Back to week view'"
           @click="toggleViewMode"
         >
-          {{ viewMode === 'week' ? '月' : '周' }}
+          {{ viewMode === 'week' ? 'Month' : 'Week' }}
         </BaseButton>
         <BaseButton v-if="viewMode === 'month'" type="info" size="small" @click="nextMonth" aria-label="下月">
           ›

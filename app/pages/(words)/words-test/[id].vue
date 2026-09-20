@@ -50,7 +50,7 @@ async function init() {
     loading = false
   }
   if (!dict.words.length) {
-    return Toast.warning('没有单词可测试！')
+    return Toast.warning('No words available to test!')
   }
   if (runtimeStore.routeData.taskWords) {
     let currentStudy: TaskWords = runtimeStore.routeData.taskWords
@@ -142,7 +142,7 @@ onMounted(init)
       <div v-if="questions.length" class="flex flex-col gap-4">
         <div class="text-4xl en-article-family flex items-center gap-2">
           <span>{{ questions[index].candidates[questions[index].correctIndex].word.word }}</span>
-          <VolumeIcon :simple="true" :title="'发音'" :cb="() => playWordAudio(questions[index].candidates[questions[index].correctIndex].word.word)" />
+          <VolumeIcon :simple="true" :title="'Pronunciation'" :cb="() => playWordAudio(questions[index].candidates[questions[index].correctIndex].word.word)" />
         </div>
         <div class="grid gap-6">
           <div

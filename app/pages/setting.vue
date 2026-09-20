@@ -558,10 +558,10 @@ function disable360() {
   let disabled = localStorage.getItem('disable360')
   if (disabled) {
     localStorage.removeItem('disable360')
-    Toast.success('已清除')
+    Toast.success('Cleared successfully')
   } else {
     localStorage.setItem('disable360', '1')
-    Toast.success('已设置')
+    Toast.success('Set successfully')
   }
 }
 </script>
@@ -657,16 +657,16 @@ function disable360() {
                 <BaseButton size="large">{{ $t('clear_all_data') }}</BaseButton>
               </PopConfirm>
               <PopConfirm
-                title="不要乱点，点击后会使导出功能失效，仅适用于： Mac 版本 360 极速浏览器"
+                title="Warning: this may break export. Only for 360 Browser on Mac"
                 @confirm="disable360"
               >
-                <BaseButton size="large" type="info">跳过导出</BaseButton>
+                <BaseButton size="large" type="info">Skip Export</BaseButton>
               </PopConfirm>
             </div>
           </div>
 
           <div v-if="tabIndex === 6">
-            <p class="text-red font-bold">过时功能：由于经常同步失败，不再推荐继续使用，请等待官方同步功能</p>
+            <p class="text-red font-bold">Deprecated: this method often fails. Please use the official Supabase sync below.</p>
             <!--          Supabase 设置  -->
             <SettingItem :title="$t('supabase_config')" :desc="$t('supabase_config_desc')">
               <div v-if="sbStatus.status !== 'idle'" class="mt-2 text-sm">

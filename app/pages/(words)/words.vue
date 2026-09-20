@@ -134,21 +134,21 @@ const reviewWordLimit = $computed(() => {
 const reviewWordTip = $computed(() => {
   const dailyGoal = store.sdict.perDayStudyNumber
   const actualCount = practiceData?.taskWords?.review?.length ?? 0
-  const rule = `复习词来自记忆曲线中今天及以前到期的已学单词，并会排除本组新词、已掌握词和已忽略词。“${effectiveReviewRatio} 倍”只决定数量上限：每日新词目标 ${dailyGoal} × ${effectiveReviewRatio}，本组最多安排 ${reviewWordLimit} 个。\n`
+  const rule = `Review words come from spaced repetition due on or before today. Excludes new words, mastered words, and ignored words. “${effectiveReviewRatio} 倍”只决定数量上限：每日新词目标 ${dailyGoal} × ${effectiveReviewRatio}，本组最多安排 ${reviewWordLimit} 个。\n`
 
   if (isSaveData) {
-    return `${rule}当前是已生成的未完成任务，共安排 ${actualCount} 个复习词；\n实际数量取决于任务生成时符合条件的到期词，不会用未到期词补足。`
+    return `${rule}Ongoing unfinished task: ${actualCount} review words scheduled.\nActual count depends on due words at generation time; no non-due words are added.`
   }
   if (reviewWordLimit === 0) {
-    return `${rule}当前数量上限为 0，因此本组不安排复习词。`
+    return `${rule}Max review count is 0, so no review words are scheduled for this session.`
   }
   if (dueReviewCount === 0 && actualCount > 0) {
-    return `${rule}当前没有到期复习词，已按“加入随机复习”设置从已学单词中随机加入 ${actualCount} 个。`
+    return `${rule}当前没有到期复习词，已按“Include random review”设置从已学单词中随机加入 ${actualCount} 个。`
   }
   if (actualCount < reviewWordLimit) {
-    return `${rule}当前只有 ${actualCount} 个符合条件的到期词，因此本组安排 ${actualCount} 个，不会用未到期词补足。`
+    return `${rule}Only ${actualCount} eligible due words found; no non-due words added to fill the target.`
   }
-  return `${rule}当前本组安排 ${actualCount} 个，已达到数量上限。`
+  return `${rule}${actualCount} review words scheduled, reaching the maximum limit.`
 })
 
 async function resetCacheData() {
@@ -176,7 +176,7 @@ watch(
         })
         tour.addStep({
           id: 'step1',
-          text: '点击这里选择一本词典Start Learning',
+          text: 'Click here to select a dictionary and start learning',
           attachTo: {
             element: '#step1',
             on: 'bottom',
@@ -364,7 +364,7 @@ const calendarHighlightDates = $computed(() => {
   return [...set]
 })
 
-/** 已落库统计总毫秒（全 bookList） */
+/** 已落库Statistics总毫秒（全 bookList） */
 const persistedTotalMs = $computed(() => total(allWordStatistics, 'spend'))
 
 const totalSpend = $computed(() => {
@@ -561,9 +561,9 @@ onUnmounted(() => {
 <template>
   <BasePage>
     <div class="my-100 text-4xl font-bold text-red" v-if="isOldHost">
-      已启用新域名
+      New domain activated:
       <a class="mr-4" :href="`${Origin}/words?from_old_site=1`">{{ Origin }}</a
-      >当前 2study.top 域名将在 7 月 3 号停止使用
+      >The 2study.top domain will stop working on July 3rd
     </div>
 
     <div class="card flex flex-col md:flex-row gap-4">
@@ -593,7 +593,7 @@ onUnmounted(() => {
 
             <div class="text-sm flex justify-between">
               <span>{{ progressTextLeft }}</span>
-              <span> {{ store.sdict?.lastLearnIndex }} / {{ store.sdict.length }} 词</span>
+              <span> {{ store.sdict?.lastLearnIndex }} / {{ store.sdict.length }}</span>
             </div>
           </div>
           <div class="flex items-center mt-4 gap-4">
@@ -605,7 +605,7 @@ onUnmounted(() => {
             </BaseButton>
             <PopConfirm
               :disabled="!isSaveData"
-              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否Continue ？"
+              title="There is an unfinished study task. Changes will regenerate it. Continue?"
               @confirm="check(() => (showChangeLastPracticeIndexDialog = true))"
             >
               <BaseButton type="info" size="small" v-if="store.sdict.id">
@@ -650,7 +650,7 @@ onUnmounted(() => {
             {{ $t('words_count') }}
             <PopConfirm
               :disabled="!isSaveData"
-              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否Continue ？"
+              title="There is an unfinished study task. Changes will regenerate it. Continue?"
               @confirm="check(() => (showPracticeSettingDialog = true))"
             >
               <BaseButton type="info" size="small">{{ $t('change') }}</BaseButton>
@@ -666,7 +666,7 @@ onUnmounted(() => {
             <div class="num flex center">
               {{ practiceData?.taskWords?.review?.length }}
               <span class="text-base color-reverse-black" v-if="!practiceData?.taskWords?.review?.length"
-                >(暂无到期词)</span
+                >(no due words)</span
               >
             </div>
             <div class="txt flex center gap-1">
@@ -679,7 +679,7 @@ onUnmounted(() => {
               </Tooltip>
             </div>
             <div class="center gap-2 mt-1 text-sm" v-if="!isSaveData && dueReviewCount === 0">
-              <span>加入随机复习</span>
+              <span>Include random review</span>
               <Switch :model-value="settingStore.autoAddRandomReviewWhenNoDue" @change="toggleAutoAddRandomReview" />
             </div>
           </div>
@@ -771,7 +771,7 @@ onUnmounted(() => {
 
     <div class="card flex flex-col md:flex-row gap-4 xl:gap-20 p-4 md:p-6">
       <div class="flex-1 flex flex-col gap-3 min-w-0">
-        <div class="title">统计</div>
+        <div class="title">Statistics</div>
         <div class="flex gap-3 items-center w-full">
           <div class="stat2">
             <div class="num">{{ todayTotalSpend }}</div>
