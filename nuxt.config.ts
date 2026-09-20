@@ -108,7 +108,7 @@ export default defineNuxtConfig({
       { code: 'id', language: 'id-ID', file: 'id.json', name: 'Bahasa Indonesia' },
       { code: 'tw', language: 'zh-TW', file: 'tw.json', name: '繁體中文' },
     ],
-    defaultLocale: 'zh',
+    defaultLocale: 'en',
     // langDir:'app/i18n/',
     strategy: 'no_prefix',
   },
