@@ -19,12 +19,35 @@ const defaultConfig: SupabaseConfig = {
   status: 'idle',
 }
 
+/** Read env vars injected by Vercel / nuxt runtimeConfig */
+function getEnvConfig(): SupabaseConfig | null {
+  try {
+    // useRuntimeConfig() is only available inside Vue setup — use the global nuxtApp instead
+    const nuxtApp = useNuxtApp()
+    const cfg = nuxtApp.$config?.public as Record<string, string> | undefined
+    const url = cfg?.supabaseUrl || ''
+    const key = cfg?.supabaseKey || ''
+    if (url && key) {
+      return { url, key, status: 'success' }
+    }
+  } catch {
+    // not in Nuxt context (e.g. tests) — ignore
+  }
+  return null
+}
+
 export function getConfig(): SupabaseConfig | null {
   try {
     const raw = localStorage.getItem(SUPABASE_CONFIG_KEY)
-    if (!raw) return null
+    if (!raw) {
+      // Fall back to env vars configured on Vercel
+      return getEnvConfig()
+    }
     const c = JSON.parse(raw) as Partial<SupabaseConfig>
-    if (!c || !c.url || !c.key) return null
+    if (!c || !c.url || !c.key) {
+      // localStorage entry exists but is incomplete — try env vars
+      return getEnvConfig()
+    }
     return {
       url: c.url,
       key: c.key,
@@ -32,7 +55,7 @@ export function getConfig(): SupabaseConfig | null {
       statusMessage: c.statusMessage,
     }
   } catch {
-    return null
+    return getEnvConfig()
   }
 }
 
