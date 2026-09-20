@@ -2,6 +2,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".output/public",
   "framework": "nuxtjs",
-  "installCommand": "npm install --legacy-peer-deps",
   "devCommand": "npm run dev"
 }
