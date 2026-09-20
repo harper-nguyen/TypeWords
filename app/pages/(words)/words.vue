@@ -79,7 +79,7 @@ async function loadPracticeCache() {
   } catch (error) {
     if (!(error instanceof UnsupportedPracticeCacheVersionError)) throw error
     unsupportedCacheVersion = true
-    Toast.error('练习缓存来自更高版本，请升级后再继续')
+    Toast.error('Practice cache is from a newer version, please upgrade to continue')
     return null
   }
 }
@@ -87,12 +87,12 @@ async function loadPracticeCache() {
 const shouldShowDialogPracticeMode = [WordPracticeMode.Shuffle, WordPracticeMode.ShuffleWordsTest]
 
 useSeoMeta({
-  title: `在线背单词与英语打字练习｜${APP_NAME}`,
-  description: '在电脑上选择 CET-4、CET-6、考研、GRE、IELTS 等词库，通过键盘跟打、拼写和科学间隔复习高效背单词。',
-  ogTitle: `在线背单词与英语打字练习｜${APP_NAME}`,
-  ogDescription: '在电脑上用键盘打字背单词，支持 50+ 词库和科学间隔复习。',
-  twitterTitle: `在线背单词与英语打字练习｜${APP_NAME}`,
-  twitterDescription: '在电脑上用键盘打字背单词，支持 50+ 词库和科学间隔复习。',
+  title: `Online Vocabulary & Typing Practice | ${APP_NAME}`,
+  description: 'Select from CET-4, CET-6, GRE, IELTS and more word lists. Practice with keyboard typing and spaced repetition.',
+  ogTitle: `Online Vocabulary & Typing Practice | ${APP_NAME}`,
+  ogDescription: 'Type words on your keyboard to memorize them. 50+ word lists with spaced repetition.',
+  twitterTitle: `Online Vocabulary & Typing Practice | ${APP_NAME}`,
+  twitterDescription: 'Type words on your keyboard to memorize them. 50+ word lists with spaced repetition.',
 })
 
 let practiceData = $ref<PracticeWordCache>({
@@ -115,9 +115,9 @@ function toggleAutoAddRandomReview(enabled: boolean) {
   const result = refreshStudyTask()
   if (!enabled) return
   if (result.randomReviewCount > 0) {
-    Toast.success(`已将 ${result.randomReviewCount} 个随机复习词加入本次学习`)
+    Toast.success(`Added ${result.randomReviewCount} random review words to this session`)
   } else {
-    Toast.warning('暂无单词可以复习，先学习一些新词后再来看看吧')
+    Toast.warning('No words due for review yet. Learn some new words first!')
   }
 }
 
@@ -176,14 +176,14 @@ watch(
         })
         tour.addStep({
           id: 'step1',
-          text: '点击这里选择一本词典开始学习',
+          text: '点击这里选择一本词典Start Learning',
           attachTo: {
             element: '#step1',
             on: 'bottom',
           },
           buttons: [
             {
-              text: `下一步（1/${TourConfig.total}）`,
+              text: `Next (1/${TourConfig.total})`,
               action() {
                 tour.next()
                 router.push('/dict-list')
@@ -257,13 +257,13 @@ async function init() {
 
 async function startPractice(practiceMode: WordPracticeMode, resetCache: boolean = false): Promise<void> {
   if (unsupportedCacheVersion) {
-    Toast.error('当前客户端无法读取这份练习缓存，请升级后再继续')
+    Toast.error('Unable to read practice cache with current version, please upgrade')
     return
   }
   if (practiceMode === WordPracticeMode.Custom) {
     const activeCustomFlowId = getActiveCustomFlowId()
     if (!activeCustomFlowId || !getUserFlow(activeCustomFlowId)) {
-      Toast.warning('请先创建并激活一个自定义流程')
+      Toast.warning('Please create and activate a custom flow first')
       router.push('/practice-flow-editor')
       return
     }
@@ -278,7 +278,7 @@ async function startPractice(practiceMode: WordPracticeMode, resetCache: boolean
 
   if (store.sdict.id) {
     if (!store.sdict.words.length) {
-      Toast.warning('没有单词可学习！')
+      Toast.warning('No words available to study!')
       return
     }
 
@@ -297,7 +297,7 @@ async function startPractice(practiceMode: WordPracticeMode, resetCache: boolean
     nav(WordPracticeModeUrlMap[practiceMode] + '/' + store.sdict.id, {}, practiceData)
   } else {
     window.umami?.track('no-dict')
-    Toast.warning('请先选择一本词典')
+    Toast.warning('Please select a dictionary first')
   }
 }
 
@@ -437,7 +437,7 @@ function onSelectCalendarDate(dateKey: string) {
       sessionRole,
     })
   }
-  if (!rows.length) return Toast.info('无学习记录')
+  if (!rows.length) return Toast.info('No study records')
   studyDayRecords = rows
   showStudyDayDialog = true
 }
@@ -465,7 +465,7 @@ async function handleBatchDel() {
     }
   })
   selectIds = []
-  Toast.success('删除成功！')
+  Toast.success('Deleted successfully!')
 }
 
 function toggleSelect(item) {
@@ -478,13 +478,13 @@ function toggleSelect(item) {
 }
 
 const progressTextLeft = $computed(() => {
-  if (store.sdict.complete) return '已学完，进入总复习阶段'
-  return '当前进度：已学' + store.currentStudyProgress + '%'
+  if (store.sdict.complete) return 'Completed! Now in full review phase'
+  return 'Progress: learned ' + store.currentStudyProgress + '%'
 })
 
 function check(cb: Function) {
   if (!store.sdict.id) {
-    Toast.warning('请先选择一本词典')
+    Toast.warning('Please select a dictionary first')
   } else {
     runtimeStore.editDict = getDefaultDict(store.sdict)
     cb()
@@ -495,7 +495,7 @@ async function savePracticeSetting() {
   await resetCacheData()
   await store.changeDict(runtimeStore.editDict)
   refreshStudyTask()
-  Toast.success('修改成功')
+  Toast.success('Saved successfully')
 }
 
 async function onShufflePracticeSettingOk(setting: ShufflePracticeSetting) {
@@ -531,20 +531,20 @@ async function saveLastPracticeIndex(e) {
   await resetCacheData()
   await store.changeDict(runtimeStore.editDict)
   refreshStudyTask()
-  Toast.success('修改成功')
+  Toast.success('Saved successfully')
 }
 
 const { data: recommendDictList, isFetching } = useFetch(resourceWrap(DICT_LIST.WORD.RECOMMENDED)).json()
 
 const systemPracticeText = $computed(() => {
   if (settingStore.wordPracticeMode === WordPracticeMode.Free) {
-    return '开始学习'
+    return 'Start Learning'
   } else if (settingStore.wordPracticeMode === WordPracticeMode.Custom) {
-    return isSaveData ? '继续自定义练习' : '开始自定义练习'
+    return isSaveData ? 'Continue Custom Practice' : 'Start Custom Practice'
   } else {
     return isSaveData
-      ? '继续' + WordPracticeModeNameMap[settingStore.wordPracticeMode]
-      : '开始' + WordPracticeModeNameMap[settingStore.wordPracticeMode]
+      ? 'Continue ' + WordPracticeModeNameMap[settingStore.wordPracticeMode]
+      : 'Start ' + WordPracticeModeNameMap[settingStore.wordPracticeMode]
   }
 })
 
@@ -605,7 +605,7 @@ onUnmounted(() => {
             </BaseButton>
             <PopConfirm
               :disabled="!isSaveData"
-              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否继续？"
+              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否Continue ？"
               @confirm="check(() => (showChangeLastPracticeIndexDialog = true))"
             >
               <BaseButton type="info" size="small" v-if="store.sdict.id">
@@ -650,7 +650,7 @@ onUnmounted(() => {
             {{ $t('words_count') }}
             <PopConfirm
               :disabled="!isSaveData"
-              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否继续？"
+              title="当前存在未完成的学习任务，修改会重新生成学习任务，是否Continue ？"
               @confirm="check(() => (showPracticeSettingDialog = true))"
             >
               <BaseButton type="info" size="small">{{ $t('change') }}</BaseButton>
@@ -880,7 +880,7 @@ onUnmounted(() => {
       v-if="!studyDayRecords.length && !(isStudyDayKeyToday(selectedStudyDateKey) && todayCacheMs > 0)"
       class="text-gray-500 py-6 text-center"
     >
-      当日无学习记录
+      当日No study records
     </div>
     <ul v-if="studyDayRecords.length" class="study-day-list max-h-70vh overflow-y-auto space-y-3">
       <li v-for="(row, idx) in studyDayRecords" :key="idx" class="border-b border-gray-200 pb-3 last:border-0">
@@ -895,7 +895,7 @@ onUnmounted(() => {
               'bg-orange-100 text-orange-700': row.sessionRole === 'end',
             }"
           >
-            {{ { start: '学习开始', middle: '学习中', end: '学习结束' }[row.sessionRole] }}
+            {{ { start: '学习Start ', middle: '学习中', end: '学习结束' }[row.sessionRole] }}
           </span>
         </div>
         <div class="text-sm text-gray-600 mt-1">
